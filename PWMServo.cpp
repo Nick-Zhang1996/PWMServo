@@ -176,7 +176,7 @@ uint8_t PWMServo::attach(int pinArg, int min, int max)
 	if (pinArg < 0 || pinArg >= NUM_DIGITAL_PINS) return 0;
 	if (!digitalPinHasPWM(pinArg)) return 0;
 	pin = pinArg;
-	analogWriteFrequency(pin, 50);
+	analogWriteFrequency(pin, 300);
 	min16 = min >> 4;
 	max16 = max >> 4;
 	angle = NO_ANGLE;
