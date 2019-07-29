@@ -30,16 +30,16 @@
 
 uint32_t PWMServo::attachedpins[(NUM_DIGITAL_PINS+31)/32]; // 1 bit per digital pin
 
-PWMServo::PWMServo() : pin(255), angle(NO_ANGLE) {}
+PWMServo::PWMServo() : pin(255) {}
 
 uint8_t PWMServo::attach(int pinArg, uint16_t min, uint16_t max)
 {
-	//Serial.printf("attach, pin=%d, min=%d, max=%d\n", pinArg, min, max);
 	if (pinArg < 0 || pinArg >= NUM_DIGITAL_PINS) return 0;
 	if (!digitalPinHasPWM(pinArg)) return 0;
 	pin = pinArg;
+  min_us = min;
+  max_us = max;
 	analogWriteFrequency(pin, 300);
-	angle = NO_ANGLE;
 	digitalWrite(pin, LOW);
 	pinMode(pin, OUTPUT);
 	attachedpins[pin >> 5] |= (1 << (pin & 31));

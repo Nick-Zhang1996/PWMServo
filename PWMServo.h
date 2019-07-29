@@ -41,8 +41,8 @@ class PWMServo
 {
   private:
     uint8_t pin;
-    float min_us;       // minimum pulse, uS units
-    float max_us;       // maximum pulse, uS units
+    uint16_t min_us;       // minimum pulse, uS units
+    uint16_t max_us;       // maximum pulse, uS units
 #if defined(__arm__) && defined(TEENSYDUINO)
     static uint32_t attachedpins[]; // 1 bit per digital pin
 #endif
