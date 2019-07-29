@@ -4,7 +4,11 @@
 /*
   PWMServo.h - Hardware Servo Timer Library
   http://arduiniana.org/libraries/pwmservo/
-  Author: Jim Studt, jim@federated.com
+  Original Author: Jim Studt, jim@federated.com
+
+  Modified by Nick Zhang, this version is specific to Teensy 3.5, though it may work on other arm based teensies. 
+  This version uses a 300Hz analogwrite frequency for fast servos
+
   Copyright (c) 2007 David A. Mellis.  All right reserved.
   renamed to PWMServo by Mikal Hart
   ported to other chips by Paul Stoffregen
@@ -26,69 +30,33 @@
 
 #include <inttypes.h>
 
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) // Arduino
-  #define SERVO_PIN_A 9
-  #define SERVO_PIN_B 10
-#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // Arduino Mega
-  #define SERVO_PIN_A 11
-  #define SERVO_PIN_B 12
-  #define SERVO_PIN_C 13
-#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) // Sanguino
-  #define SERVO_PIN_A 13
-  #define SERVO_PIN_B 12
-#elif defined(__AVR_AT90USB162__) // Teensy 1.0
-  #define SERVO_PIN_A 17
-  #define SERVO_PIN_B 18
-  #define SERVO_PIN_C 15
-#elif defined(__AVR_ATmega32U4__) // Teensy 2.0
-  #define SERVO_PIN_A 14
-  #define SERVO_PIN_B 15
-  #define SERVO_PIN_C 4
-#elif defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__) // Teensy++
-  #define SERVO_PIN_A 25
-  #define SERVO_PIN_B 26
-  #define SERVO_PIN_C 27
-#elif defined(__arm__) && defined(TEENSYDUINO)
+#if defined(__arm__) && defined(TEENSYDUINO)
   #define SERVO_PIN_A 9
   #define SERVO_PIN_B 10
   // all PWM pins supported, but names not defined here...
   // just use the actual PWM pin number with attach()
-#else
-  #define SERVO_PIN_A 9
-  #define SERVO_PIN_B 10
 #endif
 
 class PWMServo
 {
   private:
     uint8_t pin;
-    uint8_t angle;       // in degrees
-    uint8_t min16;       // minimum pulse, 16uS units  (default is 34)
-    uint8_t max16;       // maximum pulse, 16uS units, 0-4ms range (default is 150)
-#if defined(__AVR__)
-    static void seizeTimer1();
-    static void releaseTimer1();
-    static uint8_t attachedA;
-    static uint8_t attachedB;
-    #ifdef SERVO_PIN_C
-    static uint8_t attachedC;
-    #endif
-#elif defined(__arm__) && defined(TEENSYDUINO)
+    float min_us;       // minimum pulse, uS units
+    float max_us;       // maximum pulse, uS units
+#if defined(__arm__) && defined(TEENSYDUINO)
     static uint32_t attachedpins[]; // 1 bit per digital pin
 #endif
   public:
     PWMServo();
-    uint8_t attach(int pinArg) { return attach(pinArg, 544, 2400); }
+    //uint8_t attach(int pinArg) { return attach(pinArg, 544, 2400); }
                              // pulse length for 0 degrees in microseconds, 544uS default
                              // pulse length for 180 degrees in microseconds, 2400uS default
-    uint8_t attach(int pinArg, int min, int max);
+    uint8_t attach(int pinArg, uint16_t min, uint16_t max);
                              // attach to a pin, sets pinMode, returns 0 on failure, won't
                              // position the servo until a subsequent write() happens
-                             // Only works for 9 and 10.
-    void detach();
-    void write(int angleArg); // specify the angle in degrees, 0 to 180
-    uint8_t read() { return angle; }
-    uint8_t attached();
+    //void detach();
+    void writeMicroseconds(float us); //specify pulsewidth, min to max
+    //uint8_t attached();
 };
 
 #endif
